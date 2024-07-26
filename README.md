@@ -11,5 +11,7 @@ It then uses the libnotify framework to display a message to the current user.
 ## Building
 You will need libudev and libnotify for this application to build.
 
+`aplay` is needed in the system to play audio.
+
 ## Usage
 `$ usb-notify &` in your startup script (~/.xinitrc)

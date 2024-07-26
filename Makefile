@@ -9,7 +9,8 @@ CFLAGS = -ansi \
 		 -W \
 		 -Wextra \
 		 -Wall \
-		 `pkg-config --cflags --libs libnotify`
+		 `pkg-config --cflags libnotify` \
+		 -DUSB_NOTIFY_PLAY_SOUND
 
 LIBS     =  -ludev
 
@@ -19,7 +20,7 @@ SRC      :=
 all: usb-notify
 
 usb-notify: $(SRC_MAIN) $(SRC)
-		 $(CC) $(CFLAGS) -o $(BIN)/$(PROJECT) $^ $(LIBS)
+		 $(CC) $(CFLAGS) -o $(BIN)/$(PROJECT) $^ `pkg-config --libs libnotify` $(LIBS)
 
 clean:
 		 rm -f $(BIN)/*
@@ -27,3 +28,14 @@ clean:
 
 install:
 		 install -m 755 ./bin/usb-notify /usr/local/bin/usb-notify
+
+## make debian package
+debian: ./bin/usb-notify
+	rm -rf /tmp/usb-notify
+	mkdir -p /tmp/usb-notify/usr/bin
+	install -m 755 ./bin/usb-notify /tmp/usb-notify/usr/bin/usb-notify
+	mkdir -p /tmp/usb-notify/DEBIAN
+	install control /tmp/usb-notify/DEBIAN/control
+	mkdir -p /tmp/usb-notify/usr/lib/usb-notify/asset
+	install asset/usb-insert.wav /tmp/usb-notify/usr/lib/usb-notify/asset/usb-notify.wav
+	dpkg -b /tmp/usb-notify/ usb-notify-0.1.0.deb

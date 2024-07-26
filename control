@@ -1,0 +1,8 @@
+Package: usb-notify
+Priority: extra
+Section: misc
+Maintainer: No more being maintained for more than 5 years
+Architecture: i386
+Version: 0.1.0
+Description: USB notification
+ Show notification to dbus when new hardware plugin.

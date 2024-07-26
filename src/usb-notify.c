@@ -69,6 +69,10 @@ int display_notification(struct udev_device *dev)
                         "usb-notify", message, "dialog-information");
                 notify_notification_show(n_usb, NULL);
                 g_object_unref(G_OBJECT(n_usb));
+#ifdef USB_NOTIFY_PLAY_SOUND
+                /* Play sound. Ideally play sound once every 5 sec, but stick to simplest implementation ATM */
+                system("aplay /usr/lib/usb-notify/asset/usb-notify.wav >/dev/null 2>&1");
+#endif  // USB_NOTIFY_PLAY_SOUND
             }
             else
             {

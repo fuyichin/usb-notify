@@ -17,6 +17,9 @@ LIBS     =  -ludev
 SRC_MAIN := src/usb-notify.o
 SRC      :=
 
+USB_NOTIFY_TMP := $(shell mktemp)
+ARCH := $(shell dpkg --print-architecture)
+
 all: usb-notify
 
 usb-notify: $(SRC_MAIN) $(SRC)
@@ -31,11 +34,13 @@ install:
 
 ## make debian package
 debian: ./bin/usb-notify
-	rm -rf /tmp/usb-notify
-	mkdir -p /tmp/usb-notify/usr/bin
-	install -m 755 ./bin/usb-notify /tmp/usb-notify/usr/bin/usb-notify
-	mkdir -p /tmp/usb-notify/DEBIAN
-	install control /tmp/usb-notify/DEBIAN/control
-	mkdir -p /tmp/usb-notify/usr/lib/usb-notify/asset
-	install asset/usb-insert.wav /tmp/usb-notify/usr/lib/usb-notify/asset/usb-notify.wav
-	dpkg -b /tmp/usb-notify/ usb-notify-0.1.0.deb
+	echo -e $(USB_NOTIFY_TMP)
+	rm -f $(USB_NOTIFY_TMP)
+	mkdir -p $(USB_NOTIFY_TMP)/usr/bin
+	install -m 755 ./bin/usb-notify $(USB_NOTIFY_TMP)/usr/bin/usb-notify
+	mkdir -p $(USB_NOTIFY_TMP)/DEBIAN
+	sed s/i386/$(ARCH)/ control >$(USB_NOTIFY_TMP)/DEBIAN/control
+	mkdir -p $(USB_NOTIFY_TMP)/usr/lib/usb-notify/asset
+	install asset/usb-insert.wav $(USB_NOTIFY_TMP)/usr/lib/usb-notify/asset/usb-notify.wav
+	dpkg -b $(USB_NOTIFY_TMP)/ usb-notify-0.1.0.$(ARCH).deb
+	@rm -rf $(USB_NOTIFY_TMP)
